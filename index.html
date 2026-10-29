@@ -441,12 +441,10 @@
         function switchTab(tab) {
             currentTab = tab;
             
-            // Сброс активных классов
             document.getElementById('nav-lots').classList.remove('active');
             document.getElementById('nav-bought').classList.remove('active');
             document.getElementById('nav-calc').classList.remove('active');
 
-            // Скрываем все контейнеры
             filtersBar.classList.add('hidden');
             listWrapper.style.display = 'none';
             calcWrapper.classList.remove('active');
@@ -516,4 +514,14 @@
                         <div class="col"><div class="col-title">СКИДКА</div><div class="col-value gold">${lot.discount}</div></div>
                         <div class="col">
                             <div class="col-title">ПРИБЫЛЬ</div>
-                            <div class="col-value green">${lot.pro
+                            <div class="col-value green">${lot.profit}</div>
+                            <div class="roi-text">ROI ${roi}%</div>
+                        </div>
+                        <button class="buy-btn" data-id="${lot.id}">КУПИЛ</button>
+                    </div>
+                `;
+                card.querySelector('.buy-btn').addEventListener('click', () => buyLot(lot.id));
+                frag.appendChild(card);
+            });
+            container.appendChild(frag);
+       
