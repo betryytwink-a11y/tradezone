@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d9a538;
+            --gold-soft: rgba(217, 165, 56, 0.15);
+            --green: #4ADE80;
+            --bg-panel: rgba(20, 20, 20, 0.6);
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --border-mid: rgba(255, 255, 255, 0.1);
+        }
+        * { font-family: 'JetBrains Mono', monospace; font-size: 12px; box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0f0f; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        body {
+            background: radial-gradient(circle at 50% 0%, #2a2a2a 0%, #0f0f0f 70%);
+            color: #ffffff; margin: 0; padding: 0;
+            display: flex; height: 100vh; overflow: hidden; user-select: none;
+        }
+        .sidebar {
+            width: 80px; background: transparent;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100;
+        }
+        .nav-container {
+            background: var(--bg-panel); backdrop-filter: blur(15px);
+            border: 1px solid var(--border-soft); border-radius: 12px;
+            padding: 8px; display: flex; flex-direction: column; gap: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .nav-item {
+            width: 44px; height: 44px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #888; cursor: pointer; transition: all 0.2s ease; font-size: 20px;
+        }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+        .nav-item.active { background: var(--gold-soft); color: var(--gold); box-shadow: inset 0 0 0 1px rgba(217, 165, 56, 0.5); }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .filters-bar {
+            width: 100%; background-color: #141414; padding: 15px 40px;
+            display: flex; align-items: center; gap: 15px; flex-wrap: wrap;
+            font-size: 12px; color: #888; border-bottom: 1px solid #222;
+            z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .filters-bar.hidden { display: none; }
+        .filters-bar label { font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+        .btn-group { display: flex; gap: 8px; }
+        .btn {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+            color: #aaa; border: 1px solid var(--border-mid);
+            padding: 6px 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border-radius: 6px;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .btn.active { background: var(--gold-soft); color: #f0d37a; border-color: rgba(217, 165, 56, 0.5); box-shadow: 0 4px 15px rgba(217, 165, 56, 0.1); }
+        .select-group { display: flex; align-items: center; gap: 8px; position: relative; }
+        .custom-input {
+            background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid var(--border-mid);
+            padding: 6px 10px; border-radius: 6px; outline: none; width: 80px; text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .dropdown-trigger {
+            background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid var(--border-mid);
+            padding: 6px 30px 6px 10px; border-radius: 6px; cursor: pointer;
+            font-weight: 600; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px);
+            min-width: 130px;
+        }
+        .dropdown-trigger::after { content: '▼'; font-size: 8px; color: #888; margin-left: auto; }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 0; margin-top: 8px;
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-mid); border-radius: 10px;
+            padding: 10px; width: 240px; max-height: 360px; overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 1001;
+        }
+        .dropdown-menu.active { display: block; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 10px; padding: 8px; cursor: pointer;
+            border-radius: 6px; font-size: 12px; color: #fff; transition: 0.2s;
+        }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.05); }
+        .dropdown-item.selected { background: rgba(255, 255, 255, 0.05); }
+        .checkbox { width: 16px; height: 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .dropdown-item.selected .checkbox { border-color: var(--gold); color: var(--gold); }
+        .rarity-badge { padding: 2px 8px; border-radius: 4px; font-weight: 800; border: 1px solid; transition: all 0.3s ease; font-size: 11px; }
+        .show-all-btn { margin-top: 10px; border-top: 1px solid #333; padding-top: 10px; text-align: center; color: #888; cursor: pointer; font-weight: 800; font-size: 11px; }
+        .show-all-btn:hover { color: #fff; }
+        .list-wrapper { flex: 1; overflow-y: auto; padding: 20px 40px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 15px; }
+        .result-count { color: #666; font-size: 11px; text-align: right; width: 100%; max-width: 1100px; margin-bottom: 5px; }
+        .card {
+            background: linear-gradient(180deg, rgba(35, 35, 35, 0.8) 0%, rgba(15, 15, 15, 0.9) 100%);
+            backdrop-filter: blur(10px); border-radius: 10px; padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease; flex-wrap: wrap; gap: 10px;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .left { display: flex; align-items: center; gap: 15px; flex: 1; min-width: 250px; }
+        .icon { width: 44px; height: 44px; background: #1a1a1a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+        .name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+        .tags { display: flex; gap: 5px; font-size: 11px; align-items: center; flex-wrap: wrap; }
+        .tag-art { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 10px; white-space: nowrap; }
+        .right { display: flex; gap: 20px; text-align: right; align-items: center; flex-shrink: 0; }
+        .col { display: flex; flex-direction: column; }
+        .col-title { font-size: 9px; color: #888; text-transform: uppercase; margin-bottom: 4px; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; white-space: nowrap; }
+        .col-value { font-family: 'Consolas', monospace; font-size: 16px; font-weight: bold; white-space: nowrap; }
+        .gold { color: var(--gold); }
+        .green { color: var(--green); }
+        .roi-text { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #666; margin-top: 2px; }
+        .buy-btn {
+            background: rgba(217, 165, 56, 0.1); color: var(--gold); border: 1px solid var(--gold);
+            padding: 6px 12px; border-radius: 6px; font-weight: 800; cursor: pointer;
+            transition: 0.2s; font-size: 11px; margin-left: 10px;
+        }
+        .buy-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(217,165,56,0.4); }
+        .bought-card {
+            background: linear-gradient(180deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px; padding: 15px 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease; gap: 10px;
+        }
+        .bought-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.1); }
+        .total-summary {
+            width: 100%; max-width: 1100px; background: rgba(217, 165, 56, 0.05);
+            border: 1px solid rgba(217, 165, 56, 0.3); border-radius: 12px;
+            padding: 25px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .total-summary h2 { margin: 0; font-family: 'Montserrat'; font-weight: 900; color: var(--gold); font-size: 18px; }
+        .total-summary .sum { font-family: 'Consolas'; font-size: 28px; font-weight: bold; color: #fff; }
+        .profit-summary {
+            width: 100%; max-width: 1100px; background: rgba(74, 222, 128, 0.05);
+            border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px;
+            padding: 25px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .profit-summary h2 { margin: 0; font-family: 'Montserrat'; font-weight: 900; color: var(--green); font-size: 18px; }
+        .profit-summary .sum { font-family: 'Consolas'; font-size: 28px; font-weight: bold; color: var(--green); }
+        .empty-state { color: #666; text-align: center; margin-top: 50px; font-size: 14px; }
+        @media (max-width: 800px) {
+            .card, .bought-card { flex-direction: column; align-items: flex-start; }
+            .left { width: 100%; margin-bottom: 10px; }
+            .right { width: 100%; justify-content: space-between; text-align: left; gap: 10px; flex-wrap: wrap; }
+            .col { text-align: left; }
+            .sidebar { width: 60px; }
+            .total-summary, .profit-summary { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content">
+        <div class="filters-bar" id="filters-bar">
+            <label>РЫНОК</label>
+            <div class="btn-group">
+                <button class="btn active">RU</button>
+                <button class="btn">EU</button>
+            </div>
+            <div class="select-group" id="custom-dropdown">
+                <label>РЕДКОСТЬ</label>
+                <div class="dropdown-trigger" id="dropdown-trigger"><span id="selected-rarity-text">все</span></div>
+                <div class="dropdown-menu" id="dropdown-menu"></div>
+            </div>
+            <div class="input-group">
+                <label>ПРИБЫЛЬ &ge;</label>
+                <input type="number" class="custom-input" id="filter-profit" placeholder="300k">
+            </div>
+        </div>
+
+        <div class="list-wrapper" id="list-wrapper">
+            <div class="container" id="lots-container"></div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="nav-container">
+            <div class="nav-item active" id="nav-lots" title="Лоты">🛒</div>
+            <div class="nav-item" id="nav-bought" title="Куплено">💰</div>
+        </div>
+    </div>
+
+    <script>
+        // ТЕСТОВЫЕ ДАННЫЕ, ВШИТЫЕ ПРЯМО В HTML
+        const allLots = [
+            { id: "lot_0", name: "Ветка Калины", rarity: "Необычный", color: "#4ADE80", price: 160000, price_str: "160 000", resale: "210 000", profit: "+50 000", profit_num: 50000, discount: "-23.8%" },
+            { id: "lot_1", name: "Висмут", rarity: "Исключительный", color: "#F43F5E", price: 160000, price_str: "160 000", resale: "520 000", profit: "+360 000", profit_num: 360000, discount: "-69.2%" },
+            { id: "lot_2", name: "Черная Дыра", rarity: "Легендарный", color: "#FBBF24", price: 160000, price_str: "160 000", resale: "360 000", profit: "+200 000", profit_num: 200000, discount: "-55.6%" },
+            { id: "lot_3", name: "Трансформатор", rarity: "Особый", color: "#38BDF8", price: 160000, price_str: "160 000", resale: "175 000", profit: "+15 000", profit_num: 15000, discount: "-8.6%" },
+            { id: "lot_4", name: "Атом", rarity: "Исключительный", color: "#F43F5E", price: 160000, price_str: "160 000", resale: "165 000", profit: "+5 000", profit_num: 5000, discount: "-3.0%" }
+        ];
+
+        let availableLots = [...allLots];
+        let boughtLots = [];
+        let currentTab = 'lots';
+        let selectedRarity = 'all';
+
+        const RARITIES = [
+            { key: "Обычный",         color: "#aaaaaa" },
+            { key: "Необычный",       color: "#4ADE80" },
+            { key: "Особый",          color: "#38BDF8" },
+            { key: "Редкий",          color: "#FBBF24" },
+            { key: "Исключительный",  color: "#F43F5E" },
+            { key: "Легендарный",     color: "#FBBF24" }
+        ];
+
+        const trigger = document.getElementById('dropdown-trigger');
+        const menu = document.getElementById('dropdown-menu');
+        const text = document.getElementById('selected-rarity-text');
+        const filtersBar = document.getElementById('filters-bar');
+        const profitInput = document.getElementById('filter-profit');
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[c]);
+        }
+
+        function buildRarityMenu() {
+            menu.innerHTML = '';
+            RARITIES.forEach(r => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.dataset.value = r.key;
+                item.innerHTML = `
+                    <div class="checkbox"></div>
+                    <span class="rarity-badge" style="color: ${r.color}; border-color: ${r.color};">${escapeHtml(r.key)}</span>
+                `;
+                item.addEventListener('mouseenter', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    }
+                    const badge = item.querySelector('.rarity-badge');
+                    badge.style.boxShadow = `0 0 10px ${r.color}80`;
+                    badge.style.textShadow = `0 0 8px ${r.color}`;
+                });
+                item.addEventListener('mouseleave', () => {
+                    if (!item.classList.contains('selected')) {
+                        item.style.backgroundColor = 'transparent';
+                        const badge = item.querySelector('.rarity-badge');
+                        badge.style.boxShadow = 'none';
+                        badge.style.textShadow = 'none';
+                    }
+                });
+                item.addEventListener('click', () => selectRarity(r));
+                menu.appendChild(item);
+            });
+
+            const showAll = document.createElement('div');
+            showAll.className = 'show-all-btn';
+            showAll.textContent = 'показывать все';
+            showAll.addEventListener('click', resetRarity);
+            menu.appendChild(showAll);
+        }
+
+        function clearRaritySelectionUI() {
+            menu.querySelectorAll('.dropdown-item').forEach(i => {
+                i.classList.remove('selected');
+                i.style.backgroundColor = 'transparent';
+                i.querySelector('.checkbox').innerText = '';
+                const b = i.querySelector('.rarity-badge');
+                b.style.boxShadow = 'none';
+                b.style.textShadow = 'none';
+            });
+        }
+
+        function selectRarity(r) {
+            clearRaritySelectionUI();
+            const item = menu.querySelector(`.dropdown-item[data-value="${CSS.escape(r.key)}"]`);
+            if (item) {
+                item.classList.add('selected');
+                item.querySelector('.checkbox').innerText = '✓';
+                item.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                const b = item.querySelector('.rarity-badge');
+                b.style.boxShadow = `0 0 10px ${r.color}80`;
+                b.style.textShadow = `0 0 8px ${r.color}`;
+            }
+            text.innerHTML = `<span class="rarity-badge" style="color:${r.color}; border-color:${r.color}; box-shadow:0 0 10px ${r.color}80; text-shadow:0 0 8px ${r.color};">${escapeHtml(r.key)}</span>`;
+            selectedRarity = r.key;
+            menu.classList.remove('active');
+            renderAvailable();
+        }
+
+        function resetRarity() {
+            clearRaritySelectionUI();
+            text.innerText = 'все';
+            selectedRarity = 'all';
+            menu.classList.remove('active');
+            renderAvailable();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('nav-lots').classList.toggle('active', tab === 'lots');
+            document.getElementById('nav-bought').classList.toggle('active', tab === 'bought');
+            filtersBar.classList.toggle('hidden', tab !== 'lots');
+            if (tab === 'lots') renderAvailable();
+            else renderBought();
+        }
+
+        function renderAvailable() {
+            const container = document.getElementById('lots-container');
+            container.innerHTML = '';
+
+            const minProfit = parseInt(profitInput.value, 10) || 0;
+            const filtered = availableLots.filter(lot => {
+                const matchRarity = (selectedRarity === 'all' || lot.rarity === selectedRarity);
+                const matchProfit = (lot.profit_num >= minProfit);
+                return matchRarity && matchProfit;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">Нет лотов по выбранным фильтрам.</div>';
+                return;
+            }
+
+            const counter = document.createElement('div');
+            counter.className = 'result-count';
+            counter.textContent = `Найдено: ${filtered.length} из ${availableLots.length}`;
+            container.appendChild(counter);
+
+            const frag = document.createDocumentFragment();
+            filtered.forEach(lot => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.border = `1px solid ${lot.color}B0`;
+                card.style.boxShadow = `0 0 12px ${lot.color}40`;
+                card.addEventListener('mouseenter', () => { card.style.boxShadow = `0 0 18px ${lot.color}70`; });
+                card.addEventListener('mouseleave', () => { card.style.boxShadow = `0 0 12px ${lot.color}40`; });
+
+                const roi = lot.price > 0 ? ((lot.profit_num / lot.price) * 100).toFixed(1) : 0;
+
+                card.innerHTML = `
+                    <div class="left">
+                        <div class="icon" style="color: ${lot.color}; text-shadow: 0 0 8px ${lot.color};">🛡️</div>
+                        <div>
+                            <div class="name">${escapeHtml(lot.name)}</div>
+                            <div class="tags">
+                                <span class="tag-art">АРТ</span>
+                                <span class="tag-rarity" style="color: ${lot.color}; text-shadow: 0 0 4px ${lot.color}80; font-weight: 800;">${escapeHtml(lot.rarity)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="col"><div class="col-title">ЦЕНА/ШТ</div><div class="col-value">${lot.price_str}</div></div>
+                        <div class="col"><div class="col-title">ВСТАВИТЬ</div><div class="col-value">— ${lot.resale}</div></div>
+                        <div class="col"><div class="col-title">СКИДКА</div><div class="col-value gold">${lot.discount}</div></div>
+                        <div class="col">
+                            <div class="col-title">ПРИБЫЛЬ</div>
+                            <div class="col-value green">${lot.profit}</div>
+                            <div class="roi-text">ROI ${roi}%</div>
+                        </div>
+                        <button class="buy-btn" data-id="${lot.id}">КУПИЛ</button>
+                    </div>
+                `;
+                card.querySelector('.buy-btn').addEventListener('click', () => buyLot(lot.id));
+                frag.appendChild(card);
+            });
+            container.appendChild(frag);
+        }
+
+        function renderBought() {
+            const container = document.getElementById('lots-container');
+            container.innerHTML = '';
+
+            if (boughtLots.length === 0) {
+                container.innerHTML = '<div class="empty-state">Вы еще ничего не купили.</div>';
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+            let totalSum = 0;
+            let totalProfit = 0;
+
+            boughtLots.forEach(lot => {
+                totalSum += lot.price;
+                totalProfit += lot.profit_num;
+
+                const card = document.createElement('div');
+                card.className = 'bought-card';
+                card.style.border = `1px solid ${lot.color}60`;
+                
+                card.innerHTML = `
+                    <div class="left">
+                        <div class="icon" style="color: ${lot.color}; text-shadow: 0 0 8px ${lot.color};">🛡️</div>
+                        <div>
+                            <div class="name">${escapeHtml(lot.name)}</div>
+                            <div class="tags">
+                                <span class="tag-art">АРТ</span>
+                                <span class="tag-rarity" style="color: ${lot.color}; font-weight: 800;">${escapeHtml(lot.rarity)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="col"><div class="col-title">ЦЕНА ПОКУПКИ</div><div class="col-value">${lot.price_str}</div></div>
+                        <div class="col"><div class="col-title">ПОТЕНЦ. ПРИБЫЛЬ</div><div class="col-value green">${lot.profit}</div></div>
+                    </div>
+                `;
+                frag.appendChild(card);
+            });
+
+            const summary = document.createElement('div');
+            summary.className = 'total-summary';
+            summary.innerHTML = `
+                <h2>Всего потрачено:</h2>
+                <div class="sum">${totalSum.toLocaleString('ru-RU')} ₽</div>
+            `;
+            frag.appendChild(summary);
+
+            const profitSummary = document.createElement('div');
+            profitSummary.className = 'profit-summary';
+            profitSummary.innerHTML = `
+                <h2>Общая потенциальная прибыль:</h2>
+                <div class="sum">+${totalProfit.toLocaleString('ru-RU')} ₽</div>
+            `;
+            frag.appendChild(profitSummary);
+
+            container.appendChild(frag);
+        }
+
+        function buyLot(id) {
+            const idx = availableLots.findIndex(l => l.id === id);
+            if (idx === -1) return;
+            const [lot] = availableLots.splice(idx, 1);
+            boughtLots.push(lot);
+            renderAvailable();
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('custom-dropdown').contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+        document.getElementById('nav-lots').addEventListener('click', () => switchTab('lots'));
+        document.getElementById('nav-bought').addEventListener('click', () => switchTab('bought'));
+        profitInput.addEventListener('input', renderAvailable);
+
+        buildRarityMenu();
+        renderAvailable();
+    </script>
+</body>
+</html>
