@@ -12,6 +12,7 @@
             --bg-panel: rgba(20, 20, 20, 0.6);
             --border-soft: rgba(255, 255, 255, 0.08);
             --border-mid: rgba(255, 255, 255, 0.1);
+            --red: #F43F5E;
         }
         * { font-family: 'JetBrains Mono', monospace; font-size: 12px; box-sizing: border-box; }
         
@@ -26,7 +27,7 @@
             display: flex; height: 100vh; overflow: hidden; user-select: none;
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО (ТАБЛИЧКА ПРИ ВХОДЕ) --- */
+        /* --- МОДАЛЬНОЕ ОКНО --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
@@ -34,29 +35,18 @@
             z-index: 9999; opacity: 1; transition: opacity 0.3s ease;
         }
         .modal-overlay.hidden { opacity: 0; pointer-events: none; }
-        
         .modal-box {
             background: linear-gradient(180deg, #1c1c1c 0%, #0d0d0d 100%);
-            border: 1px solid var(--gold);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 500px;
-            text-align: center;
+            border: 1px solid var(--gold); border-radius: 12px;
+            padding: 40px; max-width: 500px; text-align: center;
             box-shadow: 0 0 30px rgba(217, 165, 56, 0.2);
             transform: translateY(0); transition: transform 0.3s ease;
         }
         .modal-overlay.hidden .modal-box { transform: translateY(20px); }
-
-        .modal-box h2 {
-            font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--gold);
-            font-size: 22px; margin-top: 0; margin-bottom: 15px;
-        }
-        .modal-box p {
-            color: #aaa; line-height: 1.6; margin-bottom: 30px; font-size: 14px;
-        }
+        .modal-box h2 { font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--gold); font-size: 22px; margin-top: 0; margin-bottom: 15px; }
+        .modal-box p { color: #aaa; line-height: 1.6; margin-bottom: 30px; font-size: 14px; }
         .modal-btn {
-            background: var(--gold); color: #000; border: none;
-            padding: 12px 30px; border-radius: 8px;
+            background: var(--gold); color: #000; border: none; padding: 12px 30px; border-radius: 8px;
             font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 14px;
             cursor: pointer; transition: all 0.2s; text-transform: uppercase;
         }
@@ -147,13 +137,11 @@
             transition: all 0.3s ease; flex-wrap: wrap; gap: 10px;
         }
         .card:hover { transform: translateY(-2px); }
-
         .left { display: flex; align-items: center; gap: 15px; flex: 1; min-width: 250px; }
         .icon { width: 44px; height: 44px; background: #1a1a1a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
         .name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; margin-bottom: 4px; }
         .tags { display: flex; gap: 5px; font-size: 11px; align-items: center; flex-wrap: wrap; }
         .tag-art { background: #8b5cf6; color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 10px; white-space: nowrap; }
-
         .right { display: flex; gap: 20px; text-align: right; align-items: center; flex-shrink: 0; }
         .col { display: flex; flex-direction: column; }
         .col-title { font-size: 9px; color: #888; text-transform: uppercase; margin-bottom: 4px; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; white-space: nowrap; }
@@ -161,24 +149,19 @@
         .gold { color: var(--gold); }
         .green { color: var(--green); }
         .roi-text { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #666; margin-top: 2px; }
-
         .buy-btn {
             background: rgba(217, 165, 56, 0.1); color: var(--gold); border: 1px solid var(--gold);
             padding: 6px 12px; border-radius: 6px; font-weight: 800; cursor: pointer;
             transition: 0.2s; font-size: 11px; margin-left: 10px;
         }
         .buy-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(217,165,56,0.4); }
-
-        /* --- РАЗДЕЛ "КУПЛЕНО" --- */
         .bought-card {
             background: linear-gradient(180deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.9) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px; padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 15px 25px;
             display: flex; align-items: center; justify-content: space-between;
             transition: all 0.3s ease; gap: 10px;
         }
         .bought-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.1); }
-
         .total-summary {
             width: 100%; max-width: 1100px; background: rgba(217, 165, 56, 0.05);
             border: 1px solid rgba(217, 165, 56, 0.3); border-radius: 12px;
@@ -187,7 +170,6 @@
         }
         .total-summary h2 { margin: 0; font-family: 'Montserrat'; font-weight: 900; color: var(--gold); font-size: 18px; }
         .total-summary .sum { font-family: 'Consolas'; font-size: 28px; font-weight: bold; color: #fff; }
-
         .profit-summary {
             width: 100%; max-width: 1100px; background: rgba(74, 222, 128, 0.05);
             border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px;
@@ -196,16 +178,51 @@
         }
         .profit-summary h2 { margin: 0; font-family: 'Montserrat'; font-weight: 900; color: var(--green); font-size: 18px; }
         .profit-summary .sum { font-family: 'Consolas'; font-size: 28px; font-weight: bold; color: var(--green); }
-
         .empty-state { color: #666; text-align: center; margin-top: 50px; font-size: 14px; }
-
-        /* --- НАДПИСЬ ВНИЗУ "ТЕСТОВАЯ ВЕРСИЯ" --- */
         .footer-note {
             width: 100%; text-align: center; color: #444; font-size: 11px;
             padding: 30px 0 20px 0; margin-top: auto; font-weight: 600;
             letter-spacing: 1px; text-transform: uppercase;
         }
         .footer-note span { color: var(--gold); opacity: 0.6; }
+
+        /* --- КВ КАЛЬКУЛЯТОР --- */
+        .calc-wrapper { display: none; flex-direction: column; align-items: center; width: 100%; padding: 40px 20px; }
+        .calc-wrapper.active { display: flex; }
+        .calc-box {
+            background: linear-gradient(180deg, rgba(35, 35, 35, 0.8) 0%, rgba(15, 15, 15, 0.9) 100%);
+            border: 1px solid var(--border-mid); border-radius: 16px;
+            padding: 30px; width: 100%; max-width: 800px;
+            display: flex; flex-direction: column; gap: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .calc-title { font-family: 'Montserrat'; font-weight: 900; font-size: 22px; color: var(--gold); text-align: center; margin-bottom: 10px; }
+        
+        .calc-inputs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .calc-group { display: flex; flex-direction: column; gap: 8px; }
+        .calc-group label { color: #888; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .calc-group input {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-mid);
+            color: #fff; padding: 12px; border-radius: 8px; font-size: 18px;
+            font-family: 'Consolas', monospace; font-weight: bold; outline: none; text-align: center;
+        }
+        .calc-group input:focus { border-color: var(--gold); }
+
+        .calc-divider { height: 1px; background: var(--border-mid); margin: 10px 0; }
+
+        .calc-results { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .result-box {
+            background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .result-box .label { color: #888; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+        .result-box .value { font-family: 'Consolas'; font-size: 28px; font-weight: bold; color: #fff; }
+        
+        .result-box.highlight { border-color: var(--red); box-shadow: 0 0 20px rgba(244, 63, 94, 0.1); }
+        .result-box.highlight .value { color: var(--red); }
+        
+        .result-box.profit { border-color: var(--green); box-shadow: 0 0 20px rgba(74, 222, 128, 0.1); }
+        .result-box.profit .value { color: var(--green); }
 
         @media (max-width: 800px) {
             .card, .bought-card { flex-direction: column; align-items: flex-start; }
@@ -215,6 +232,8 @@
             .sidebar { width: 60px; }
             .total-summary, .profit-summary { flex-direction: column; align-items: flex-start; gap: 10px; }
             .modal-box { width: 90%; padding: 25px; }
+            .calc-inputs-grid { grid-template-columns: 1fr; }
+            .calc-results { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -231,6 +250,7 @@
 
     <!-- ОСНОВНАЯ ЧАСТЬ -->
     <div class="main-content">
+        <!-- ПАНЕЛЬ ФИЛЬТРОВ (Только для лотов) -->
         <div class="filters-bar" id="filters-bar">
             <label>РЫНОК</label>
             <div class="btn-group">
@@ -248,14 +268,48 @@
             </div>
         </div>
 
+        <!-- СПИСОК ЛОТОВ / КУПЛЕНО -->
         <div class="list-wrapper" id="list-wrapper">
-            <div class="container" id="lots-container">
-                <!-- Сюда рендерятся карточки -->
-            </div>
+            <div class="container" id="lots-container"></div>
             
             <!-- НАДПИСЬ ВНИЗУ -->
             <div class="footer-note">
                 <span>•</span> Тестовая версия <span>•</span>
+            </div>
+        </div>
+
+        <!-- КВ КАЛЬКУЛЯТОР -->
+        <div class="calc-wrapper" id="calc-wrapper">
+            <div class="calc-box">
+                <h1 class="calc-title">КВ Калькулятор</h1>
+                
+                <div class="calc-inputs-grid">
+                    <div class="calc-group">
+                        <label>Игроков на этапе</label>
+                        <input type="number" id="calc-players" value="30" min="1" max="30">
+                    </div>
+                    <div class="calc-group">
+                        <label>Ящиков на игрока</label>
+                        <input type="number" id="calc-boxes" value="3" min="1" step="1">
+                    </div>
+                    <div class="calc-group">
+                        <label>Цена ящика (₽)</label>
+                        <input type="number" id="calc-price" value="10000" min="0" step="100">
+                    </div>
+                </div>
+
+                <div class="calc-divider"></div>
+
+                <div class="calc-results">
+                    <div class="result-box highlight">
+                        <div class="label">Всего ящиков на КВ (9 этапов)</div>
+                        <div class="value" id="total-boxes">810</div>
+                    </div>
+                    <div class="result-box profit">
+                        <div class="label">Общие затраты</div>
+                        <div class="value" id="total-cost">8 100 000 ₽</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -265,6 +319,7 @@
         <div class="nav-container">
             <div class="nav-item active" id="nav-lots" title="Лоты">🛒</div>
             <div class="nav-item" id="nav-bought" title="Куплено">💰</div>
+            <div class="nav-item" id="nav-calc" title="КВ Калькулятор">💣</div>
         </div>
     </div>
 
@@ -273,11 +328,10 @@
         function closeModal() {
             const modal = document.getElementById('welcomeModal');
             modal.classList.add('hidden');
-            // Чтобы окно полностью исчезло из DOM и не мешало кликам, убираем его через 300мс (после анимации)
             setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
 
-        // --- ОСТАЛЬНАЯ ЛОГИКА ---
+        // --- ДАННЫЕ ЛОТОВ ---
         const allLots = [
             { id: "lot_0", name: "Ветка Калины", rarity: "Необычный", color: "#4ADE80", price: 160000, price_str: "160 000", resale: "210 000", profit: "+50 000", profit_num: 50000, discount: "-23.8%" },
             { id: "lot_1", name: "Висмут", rarity: "Исключительный", color: "#F43F5E", price: 160000, price_str: "160 000", resale: "520 000", profit: "+360 000", profit_num: 360000, discount: "-69.2%" },
@@ -292,12 +346,12 @@
         let selectedRarity = 'all';
 
         const RARITIES = [
-            { key: "Обычный",         color: "#aaaaaa" },
-            { key: "Необычный",       color: "#4ADE80" },
-            { key: "Особый",          color: "#38BDF8" },
-            { key: "Редкий",          color: "#FBBF24" },
-            { key: "Исключительный",  color: "#F43F5E" },
-            { key: "Легендарный",     color: "#FBBF24" }
+            { key: "Обычный", color: "#aaaaaa" },
+            { key: "Необычный", color: "#4ADE80" },
+            { key: "Особый", color: "#38BDF8" },
+            { key: "Редкий", color: "#FBBF24" },
+            { key: "Исключительный", color: "#F43F5E" },
+            { key: "Легендарный", color: "#FBBF24" }
         ];
 
         const trigger = document.getElementById('dropdown-trigger');
@@ -305,6 +359,8 @@
         const text = document.getElementById('selected-rarity-text');
         const filtersBar = document.getElementById('filters-bar');
         const profitInput = document.getElementById('filter-profit');
+        const listWrapper = document.getElementById('list-wrapper');
+        const calcWrapper = document.getElementById('calc-wrapper');
 
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, c => ({
@@ -323,9 +379,7 @@
                     <span class="rarity-badge" style="color: ${r.color}; border-color: ${r.color};">${escapeHtml(r.key)}</span>
                 `;
                 item.addEventListener('mouseenter', () => {
-                    if (!item.classList.contains('selected')) {
-                        item.style.backgroundColor = 'rgba(255,255,255,0.05)';
-                    }
+                    if (!item.classList.contains('selected')) item.style.backgroundColor = 'rgba(255,255,255,0.05)';
                     const badge = item.querySelector('.rarity-badge');
                     badge.style.boxShadow = `0 0 10px ${r.color}80`;
                     badge.style.textShadow = `0 0 8px ${r.color}`;
@@ -341,7 +395,6 @@
                 item.addEventListener('click', () => selectRarity(r));
                 menu.appendChild(item);
             });
-
             const showAll = document.createElement('div');
             showAll.className = 'show-all-btn';
             showAll.textContent = 'показывать все';
@@ -355,8 +408,7 @@
                 i.style.backgroundColor = 'transparent';
                 i.querySelector('.checkbox').innerText = '';
                 const b = i.querySelector('.rarity-badge');
-                b.style.boxShadow = 'none';
-                b.style.textShadow = 'none';
+                b.style.boxShadow = 'none'; b.style.textShadow = 'none';
             });
         }
 
@@ -385,15 +437,36 @@
             renderAvailable();
         }
 
+        // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('nav-lots').classList.toggle('active', tab === 'lots');
-            document.getElementById('nav-bought').classList.toggle('active', tab === 'bought');
-            filtersBar.classList.toggle('hidden', tab !== 'lots');
-            if (tab === 'lots') renderAvailable();
-            else renderBought();
+            
+            // Сброс активных классов
+            document.getElementById('nav-lots').classList.remove('active');
+            document.getElementById('nav-bought').classList.remove('active');
+            document.getElementById('nav-calc').classList.remove('active');
+
+            // Скрываем все контейнеры
+            filtersBar.classList.add('hidden');
+            listWrapper.style.display = 'none';
+            calcWrapper.classList.remove('active');
+
+            if (tab === 'lots') {
+                document.getElementById('nav-lots').classList.add('active');
+                filtersBar.classList.remove('hidden');
+                listWrapper.style.display = 'flex';
+                renderAvailable();
+            } else if (tab === 'bought') {
+                document.getElementById('nav-bought').classList.add('active');
+                listWrapper.style.display = 'flex';
+                renderBought();
+            } else if (tab === 'calc') {
+                document.getElementById('nav-calc').classList.add('active');
+                calcWrapper.classList.add('active');
+            }
         }
 
+        // --- РЕНДЕР ЛОТОВ ---
         function renderAvailable() {
             const container = document.getElementById('lots-container');
             container.innerHTML = '';
@@ -443,100 +516,4 @@
                         <div class="col"><div class="col-title">СКИДКА</div><div class="col-value gold">${lot.discount}</div></div>
                         <div class="col">
                             <div class="col-title">ПРИБЫЛЬ</div>
-                            <div class="col-value green">${lot.profit}</div>
-                            <div class="roi-text">ROI ${roi}%</div>
-                        </div>
-                        <button class="buy-btn" data-id="${lot.id}">КУПИЛ</button>
-                    </div>
-                `;
-                card.querySelector('.buy-btn').addEventListener('click', () => buyLot(lot.id));
-                frag.appendChild(card);
-            });
-            container.appendChild(frag);
-        }
-
-        function renderBought() {
-            const container = document.getElementById('lots-container');
-            container.innerHTML = '';
-
-            if (boughtLots.length === 0) {
-                container.innerHTML = '<div class="empty-state">Вы еще ничего не купили.</div>';
-                return;
-            }
-
-            const frag = document.createDocumentFragment();
-            let totalSum = 0;
-            let totalProfit = 0;
-
-            boughtLots.forEach(lot => {
-                totalSum += lot.price;
-                totalProfit += lot.profit_num;
-
-                const card = document.createElement('div');
-                card.className = 'bought-card';
-                card.style.border = `1px solid ${lot.color}60`;
-                
-                card.innerHTML = `
-                    <div class="left">
-                        <div class="icon" style="color: ${lot.color}; text-shadow: 0 0 8px ${lot.color};">🛡️</div>
-                        <div>
-                            <div class="name">${escapeHtml(lot.name)}</div>
-                            <div class="tags">
-                                <span class="tag-art">АРТ</span>
-                                <span class="tag-rarity" style="color: ${lot.color}; font-weight: 800;">${escapeHtml(lot.rarity)}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="right">
-                        <div class="col"><div class="col-title">ЦЕНА ПОКУПКИ</div><div class="col-value">${lot.price_str}</div></div>
-                        <div class="col"><div class="col-title">ПОТЕНЦ. ПРИБЫЛЬ</div><div class="col-value green">${lot.profit}</div></div>
-                    </div>
-                `;
-                frag.appendChild(card);
-            });
-
-            const summary = document.createElement('div');
-            summary.className = 'total-summary';
-            summary.innerHTML = `
-                <h2>Всего потрачено:</h2>
-                <div class="sum">${totalSum.toLocaleString('ru-RU')} ₽</div>
-            `;
-            frag.appendChild(summary);
-
-            const profitSummary = document.createElement('div');
-            profitSummary.className = 'profit-summary';
-            profitSummary.innerHTML = `
-                <h2>Общая потенциальная прибыль:</h2>
-                <div class="sum">+${totalProfit.toLocaleString('ru-RU')} ₽</div>
-            `;
-            frag.appendChild(profitSummary);
-
-            container.appendChild(frag);
-        }
-
-        function buyLot(id) {
-            const idx = availableLots.findIndex(l => l.id === id);
-            if (idx === -1) return;
-            const [lot] = availableLots.splice(idx, 1);
-            boughtLots.push(lot);
-            renderAvailable();
-        }
-
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menu.classList.toggle('active');
-        });
-        document.addEventListener('click', (e) => {
-            if (!document.getElementById('custom-dropdown').contains(e.target)) {
-                menu.classList.remove('active');
-            }
-        });
-        document.getElementById('nav-lots').addEventListener('click', () => switchTab('lots'));
-        document.getElementById('nav-bought').addEventListener('click', () => switchTab('bought'));
-        profitInput.addEventListener('input', renderAvailable);
-
-        buildRarityMenu();
-        renderAvailable();
-    </script>
-</body>
-</html>
+                            <div class="col-value green">${lot.pro
