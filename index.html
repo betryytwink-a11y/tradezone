@@ -524,4 +524,118 @@
                 frag.appendChild(card);
             });
             container.appendChild(frag);
-       
+        }
+
+        function renderBought() {
+            const container = document.getElementById('lots-container');
+            container.innerHTML = '';
+
+            if (boughtLots.length === 0) {
+                container.innerHTML = '<div class="empty-state">Вы еще ничего не купили.</div>';
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+            let totalSum = 0;
+            let totalProfit = 0;
+
+            boughtLots.forEach(lot => {
+                totalSum += lot.price;
+                totalProfit += lot.profit_num;
+
+                const card = document.createElement('div');
+                card.className = 'bought-card';
+                card.style.border = `1px solid ${lot.color}60`;
+                
+                card.innerHTML = `
+                    <div class="left">
+                        <div class="icon" style="color: ${lot.color}; text-shadow: 0 0 8px ${lot.color};">🛡️</div>
+                        <div>
+                            <div class="name">${escapeHtml(lot.name)}</div>
+                            <div class="tags">
+                                <span class="tag-art">АРТ</span>
+                                <span class="tag-rarity" style="color: ${lot.color}; font-weight: 800;">${escapeHtml(lot.rarity)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="col"><div class="col-title">ЦЕНА ПОКУПКИ</div><div class="col-value">${lot.price_str}</div></div>
+                        <div class="col"><div class="col-title">ПОТЕНЦ. ПРИБЫЛЬ</div><div class="col-value green">${lot.profit}</div></div>
+                    </div>
+                `;
+                frag.appendChild(card);
+            });
+
+            const summary = document.createElement('div');
+            summary.className = 'total-summary';
+            summary.innerHTML = `
+                <h2>Всего потрачено:</h2>
+                <div class="sum">${totalSum.toLocaleString('ru-RU')} ₽</div>
+            `;
+            frag.appendChild(summary);
+
+            const profitSummary = document.createElement('div');
+            profitSummary.className = 'profit-summary';
+            profitSummary.innerHTML = `
+                <h2>Общая потенциальная прибыль:</h2>
+                <div class="sum">+${totalProfit.toLocaleString('ru-RU')} ₽</div>
+            `;
+            frag.appendChild(profitSummary);
+
+            container.appendChild(frag);
+        }
+
+        function buyLot(id) {
+            const idx = availableLots.findIndex(l => l.id === id);
+            if (idx === -1) return;
+            const [lot] = availableLots.splice(idx, 1);
+            boughtLots.push(lot);
+            renderAvailable();
+        }
+
+        // --- ЛОГИКА КАЛЬКУЛЯТОРА ---
+        const calcPlayers = document.getElementById('calc-players');
+        const calcBoxes = document.getElementById('calc-boxes');
+        const calcPrice = document.getElementById('calc-price');
+        const totalBoxesEl = document.getElementById('total-boxes');
+        const totalCostEl = document.getElementById('total-cost');
+
+        function updateCalc() {
+            const players = parseInt(calcPlayers.value) || 0;
+            const boxesPerPlayer = parseInt(calcBoxes.value) || 0;
+            const price = parseInt(calcPrice.value) || 0;
+
+            // 3 этапа в день * 3 дня = 9 этапов
+            const totalStages = 9;
+            const totalBoxes = players * boxesPerPlayer * totalStages;
+            const totalCost = totalBoxes * price;
+
+            totalBoxesEl.textContent = totalBoxes.toLocaleString('ru-RU');
+            totalCostEl.textContent = totalCost.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        [calcPlayers, calcBoxes, calcPrice].forEach(input => {
+            input.addEventListener('input', updateCalc);
+        });
+
+        // --- ИНИЦИАЛИЗАЦИЯ ---
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('custom-dropdown').contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+        document.getElementById('nav-lots').addEventListener('click', () => switchTab('lots'));
+        document.getElementById('nav-bought').addEventListener('click', () => switchTab('bought'));
+        document.getElementById('nav-calc').addEventListener('click', () => switchTab('calc'));
+        profitInput.addEventListener('input', renderAvailable);
+
+        buildRarityMenu();
+        renderAvailable();
+        updateCalc(); // Инициализация калькулятора при загрузке
+    </script>
+</body>
+</html>
